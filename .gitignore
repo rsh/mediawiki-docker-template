@@ -1,0 +1,15 @@
+# Environment configuration (contains secrets)
+.env
+
+# MediaWiki instance directory (all data backed up separately)
+instance/
+
+# Backup files
+*.tar.gz
+*.sql
+*.sqlite
+*.db
+
+# Temporary files
+*.tmp
+.DS_Store

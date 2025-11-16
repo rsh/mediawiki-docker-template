@@ -1,0 +1,41 @@
+# MediaWiki with MariaDB - Base Configuration
+#
+# This file contains shared configuration for both dev and prod.
+#
+# Usage:
+#   Development: docker-compose up -d
+#                (automatically loads docker-compose.override.yml)
+#
+#   Production:  docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  mediawiki:
+    image: mediawiki:latest
+    container_name: ${CONTAINER_MEDIAWIKI_NAME}
+    restart: unless-stopped
+    volumes:
+      - ./instance/images:/var/www/html/images
+      - ./instance/LocalSettings.php:/var/www/html/LocalSettings.php
+    networks:
+      - internal_network
+    depends_on:
+      - database
+
+  database:
+    image: mariadb
+    container_name: ${CONTAINER_DB_NAME}
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - ./instance/db:/var/lib/mysql
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
+    name: ${WIKI_NAME}_network
+    driver: bridge

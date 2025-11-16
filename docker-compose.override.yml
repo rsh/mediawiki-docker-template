@@ -1,0 +1,12 @@
+# MediaWiki - Development Overrides
+#
+# This file is automatically loaded when you run: docker-compose up -d
+# It adds development-specific configuration on top of docker-compose.yml
+#
+# Make sure LocalSettings.php has:
+#   $wgServer = "http://localhost:${DEV_PORT}";
+
+services:
+  mediawiki:
+    ports:
+      - "${DEV_PORT}:80"

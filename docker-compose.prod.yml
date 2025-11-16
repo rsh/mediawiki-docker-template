@@ -1,0 +1,30 @@
+# MediaWiki - Production Overrides
+#
+# This file adds production-specific configuration on top of docker-compose.yml
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Prerequisites:
+#   1. External caddy_network must exist:
+#      docker network create caddy_network
+#
+#   2. Caddy reverse proxy must be configured for your domain (Caddyfile):
+#      ${PROD_DOMAIN} {
+#          reverse_proxy ${CONTAINER_MEDIAWIKI_NAME}:80
+#      }
+#
+#   3. Update LocalSettings.php with production URL:
+#      $wgServer = "https://${PROD_DOMAIN}";
+#
+# Note: No ports are exposed - access is only through Caddy reverse proxy
+
+services:
+  mediawiki:
+    networks:
+      - internal_network
+      - caddy_network
+
+networks:
+  caddy_network:
+    external: true

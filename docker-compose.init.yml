@@ -1,0 +1,18 @@
+# MediaWiki - Initial Setup Configuration
+#
+# Use this file for first-time setup when LocalSettings.php doesn't exist yet
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.init.yml -f docker-compose.override.yml up -d
+#
+# After completing the MediaWiki installation wizard and downloading LocalSettings.php:
+#   1. Place LocalSettings.php in instance/LocalSettings.php
+#   2. Stop: docker-compose down
+#   3. Start normally: docker-compose up -d (this will use the regular config with LocalSettings.php mounted)
+
+services:
+  mediawiki:
+    volumes:
+      # Override the LocalSettings.php mount from base config
+      # Only mount images directory during initial setup
+      - ./instance/images:/var/www/html/images
