@@ -120,7 +120,11 @@ When starting for the first time, the script will display:
 **What does configure-localsettings.sh do?**
 - Sets `$wgServer` to the correct URL (localhost:port for dev, or your domain for prod)
 - Updates `$wgDBserver` to use the correct container name
-- Ensures your wiki URLs work correctly
+- Optionally applies recommended UI theme settings:
+  - Vector 2022 skin (modern, responsive design)
+  - Short URLs (`/wiki/Page_Title` instead of `/index.php?title=Page_Title`)
+  - Lowercase page titles (allows mixed-case page names)
+  - Optimized font size for readability
 
 ## Environment Configuration
 

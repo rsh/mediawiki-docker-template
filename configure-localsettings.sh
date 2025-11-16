@@ -112,6 +112,71 @@ if grep -q '^\$wgDBserver' "$LOCAL_SETTINGS"; then
     echo -e "${GREEN}✓ Updated \$wgDBserver to use container name${NC}"
 fi
 
+# Ask about UI theme
+echo ""
+echo -e "${BLUE}UI Theme Configuration${NC}"
+echo ""
+echo "Would you like to apply recommended UI theme settings?"
+echo "This includes:"
+echo "  - Vector 2022 skin (modern, responsive)"
+echo "  - Short URLs (/wiki/Page_Title instead of /index.php?title=Page_Title)"
+echo "  - Lowercase page titles (allows mixed-case page names)"
+echo "  - Optimized font size"
+echo ""
+read -r -p "Apply theme settings? (yes/no): " APPLY_THEME
+
+if [ "$APPLY_THEME" = "yes" ]; then
+    echo ""
+    echo "Applying UI theme settings..."
+
+    # Check if theme settings already exist
+    if ! grep -q '^\$wgArticlePath' "$LOCAL_SETTINGS"; then
+        # Add theme configuration block at the end
+        cat >> "$LOCAL_SETTINGS" << 'EOF'
+
+# UI Theme Configuration
+$wgArticlePath = "/wiki/$1"; // gives e.g. example.org/wiki/Page_title
+$wgCapitalLinks = false;
+$wgDefaultUserOptions['vector-font-size'] = '1';
+EOF
+        echo -e "${GREEN}✓ Added UI theme settings${NC}"
+    else
+        echo -e "${YELLOW}Theme settings already exist - skipping${NC}"
+    fi
+
+    # Set default skin to vector-2022 if not already set
+    if grep -q '^\$wgDefaultSkin' "$LOCAL_SETTINGS"; then
+        if ! grep -q 'vector-2022' "$LOCAL_SETTINGS"; then
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                sed -i '' 's|^\$wgDefaultSkin = .*|\$wgDefaultSkin = "vector-2022";|' "$LOCAL_SETTINGS"
+            else
+                sed -i 's|^\$wgDefaultSkin = .*|\$wgDefaultSkin = "vector-2022";|' "$LOCAL_SETTINGS"
+            fi
+            echo -e "${GREEN}✓ Updated skin to vector-2022${NC}"
+        fi
+    fi
+
+    # Enable vector responsive if not already enabled
+    if ! grep -q '^\$wgVectorResponsive' "$LOCAL_SETTINGS"; then
+        # Add after $wgDefaultSkin
+        if grep -q '^\$wgDefaultSkin' "$LOCAL_SETTINGS"; then
+            if [[ "$OSTYPE" == "darwin"* ]]; then
+                sed -i '' "/^\$wgDefaultSkin/a\\
+\$wgVectorResponsive = true;\\
+" "$LOCAL_SETTINGS"
+            else
+                sed -i "/^\$wgDefaultSkin/a\\
+\$wgVectorResponsive = true;" "$LOCAL_SETTINGS"
+            fi
+            echo -e "${GREEN}✓ Enabled responsive vector theme${NC}"
+        fi
+    fi
+
+    echo -e "${GREEN}✓ Theme configuration applied!${NC}"
+else
+    echo -e "${YELLOW}Skipped theme configuration${NC}"
+fi
+
 echo ""
 echo -e "${GREEN}Configuration complete!${NC}"
 echo ""
